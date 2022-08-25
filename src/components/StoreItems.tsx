@@ -1,5 +1,6 @@
 import { Card, Button } from 'react-bootstrap';
 import { formatCurrency } from '../utilities/formatCurrency';
+import { useShoppingCart } from '../context/ShoppingCartContext';
 
 type StoreItemsProp = {
   id: number;
@@ -14,6 +15,17 @@ export default function StoreItems({
   price,
   name,
 }: StoreItemsProp) {
+  console.log(useShoppingCart());
+
+  const {
+    getItemQuantity,
+    increaseCartQuantity,
+    decreaseCartQuantity,
+    removeFromCart,
+  } = useShoppingCart();
+
+  const quantity = getItemQuantity(id);
+
   return (
     <Card>
       <Card.Img
@@ -29,18 +41,54 @@ export default function StoreItems({
           <span className='ms-2 text-muted'>{formatCurrency(price)}</span>
         </Card.Title>
         <div className=' mt-auto'>
-          <Button className='w-100'> + Add to Cart</Button>
-          {/* <div className='d-flex align-items-center justify-content-center'>
-            <Button variant='primary' size='sm'>
-              +
+          {quantity === 0 ? (
+            <Button
+              className='w-100'
+              onClick={() => {
+                increaseCartQuantity(id);
+              }}>
+              + Add to Cart
             </Button>
-            <span>
-              <span className='fs-3'>1</span> in cart
-            </span>
-            <Button variant='danger' size='sm'>
-              -
-            </Button>
-          </div> */}
+          ) : (
+            <div
+              className='d-flex align-items-center justify-content-center flex-column'
+              style={{ gap: '5px' }}>
+              <div
+                className='d-flex align-items-center justify-content-center'
+                style={{ gap: '5px' }}>
+                <Button
+                  variant='primary'
+                  size='sm'
+                  onClick={() => {
+                    increaseCartQuantity(id);
+                  }}>
+                  +
+                </Button>
+                <span>
+                  <span>{quantity}</span> in cart
+                </span>
+                <Button
+                  size='sm'
+                  onClick={() => {
+                    decreaseCartQuantity(id);
+                  }}>
+                  -
+                </Button>
+              </div>
+              <div>
+                <Button
+                  variant='danger'
+                  size='sm'
+                  onClick={() => {
+                    removeFromCart(id);
+                  }}>
+                  Remove
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/*  */}
         </div>
       </Card.Body>
     </Card>
